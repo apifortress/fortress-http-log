@@ -12,7 +12,7 @@ local string_format = string.format
 local cjson_encode = cjson.encode
 local HTTP = "http"
 local HTTPS = "https"
-
+local NAME = "[ fhttp-log ] "
 
 local system_constants = require "lua_system_constants"
 local serializer = require "kong.plugins.fhttp-log.serializer"
@@ -51,7 +51,7 @@ local function generate_post_payload(parsed_url, body, conf)
   if conf.mock_domain then
     headers = headers..string_format("x-mock-domain: %s\r\n",conf.mock_domain)
   end
-  
+
   return string_format("%s\r\n%s", headers, body)
 end
 
@@ -90,25 +90,25 @@ local function log(premature, conf, body)
 
   ok, err = sock:connect(host, port)
   if not ok then
-    ngx.log(ngx.ERR, name .. "failed to connect to " .. host .. ":" .. tostring(port) .. ": ", err)
+    ngx.log(ngx.ERR, NAME .. "failed to connect to " .. host .. ":" .. tostring(port) .. ": ", err)
     return
   end
 
   if parsed_url.scheme == HTTPS then
     local _, err = sock:sslhandshake(true, host, false)
     if err then
-      ngx.log(ngx.ERR, name .. "failed to do SSL handshake with " .. host .. ":" .. tostring(port) .. ": ", err)
+      ngx.log(ngx.ERR, NAME .. "failed to do SSL handshake with " .. host .. ":" .. tostring(port) .. ": ", err)
     end
   end
 
   ok, err = sock:send(generate_post_payload(parsed_url, body, conf))
   if not ok then
-    ngx.log(ngx.ERR, name .. "failed to send data to " .. host .. ":" .. tostring(port) .. ": ", err)
+    ngx.log(ngx.ERR, NAME .. "failed to send data to " .. host .. ":" .. tostring(port) .. ": ", err)
   end
 
   ok, err = sock:setkeepalive(conf.keepalive)
   if not ok then
-    ngx.log(ngx.ERR, name .. "failed to keepalive to " .. host .. ":" .. tostring(port) .. ": ", err)
+    ngx.log(ngx.ERR, NAME .. "failed to keepalive to " .. host .. ":" .. tostring(port) .. ": ", err)
     return
   end
 end
@@ -126,7 +126,7 @@ function FHttpHandler:access(conf)
 
 
   local ctx = ngx.ctx
-  ctx.fhttp_log = { req_body = "", res_body = "" }
+  ctx.fhttp_log = { q_body = "", res_body = "" }
   if conf.log_bodies then
     req_read_body()
     ctx.fhttp_log.req_body = req_get_body_data()
@@ -147,11 +147,13 @@ end
 
 function FHttpHandler:log(conf)
   FHttpHandler.super.log(self)
-  local message = cjson_encode(serializer.serialize(ngx))
-
-  local ok, err = ngx_timer(0, log, conf, message)
-  if not ok then
-    ngx.log(ngx.ERR, "[fhttp-log] failed to create timer: ", err)
+  local mock = ngx.req.get_headers()["x-mock"]
+  if not mock or mock~="true" then
+    local message = cjson_encode(serializer.serialize(ngx))
+    local ok, err = ngx_timer(0, log, conf, message)
+    if not ok then
+      ngx.log(ngx.ERR, "[fhttp-log] failed to create timer: ", err)
+    end
   end
 
 end
