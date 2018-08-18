@@ -113,16 +113,16 @@ local function log(premature, conf, body)
   end
 end
 
-local FHttpHandler = BasePlugin:extend()
+local FHttpLogHandler = BasePlugin:extend()
 
-FHttpHandler.PRIORITY = 1
+FHttpLogHandler.PRIORITY = 1
 
-function FHttpHandler:new()
-  FHttpHandler.super.new(self, "fhttp-log")
+function FHttpLogHandler:new()
+  FHttpLogHandler.super.new(self, "fhttp-log")
 end
 
-function FHttpHandler:access(conf)
-  FHttpHandler.super.access(self)
+function FHttpLogHandler:access(conf)
+  FHttpLogHandler.super.access(self)
 
 
   local ctx = ngx.ctx
@@ -133,8 +133,8 @@ function FHttpHandler:access(conf)
   end
 end
 
-function FHttpHandler:body_filter(conf)
-  FHttpHandler.super.body_filter(self)
+function FHttpLogHandler:body_filter(conf)
+  FHttpLogHandler.super.body_filter(self)
 
   if conf.log_bodies then
     local chunk = ngx.arg[1]
@@ -145,8 +145,8 @@ function FHttpHandler:body_filter(conf)
   end
 end
 
-function FHttpHandler:log(conf)
-  FHttpHandler.super.log(self)
+function FHttpLogHandler:log(conf)
+  FHttpLogHandler.super.log(self)
   local mock = ngx.req.get_headers()["x-mock"]
   if not mock or mock~="true" then
     local message = cjson_encode(serializer.serialize(ngx))
@@ -158,4 +158,4 @@ function FHttpHandler:log(conf)
 
 end
 
-return FHttpHandler
+return FHttpLogHandler
