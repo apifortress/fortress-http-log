@@ -11,6 +11,9 @@ return {
     http_endpoint = { required = true, type = "url" },
     timeout = { default = 10000, type = "number" },
     keepalive = { default = 60000, type = "number" },
-    log_bodies = { type = "boolean", default = true }
+    log_bodies = { type = "boolean", default = true },
+    api_key = { type = "string", default = "" },
+    mock_domain = { type = "string", default = "" },
+    secret = { type = "string", default = ""}
   }
 }

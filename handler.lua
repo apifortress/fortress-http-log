@@ -38,7 +38,7 @@ local mode = bit.bor(S_IRUSR, S_IWUSR, S_IRGRP, S_IROTH)
 -- @param `parsed_url` contains the host details
 -- @param `body`  Body of the message as a string
 -- @return raw http message
-local function generate_post_payload(parsed_url, body)
+local function generate_post_payload(parsed_url, body, conf)
   local url
   if parsed_url.query then
     url = parsed_url.path .. "?" .. parsed_url.query
@@ -46,9 +46,12 @@ local function generate_post_payload(parsed_url, body)
     url = parsed_url.path
   end
   local headers = string_format(
-    "%s %s HTTP/1.1\r\nHost: %s\r\nConnection: Keep-Alive\r\nContent-Type: application/json\r\nContent-Length: %s\r\n",
-    "POST", url, parsed_url.host, #body)
-
+    "%s %s HTTP/1.1\r\nHost: %s\r\nConnection: Keep-Alive\r\nContent-Type: application/json\r\nContent-Length: %s\r\nx-api-key: %s\r\nx-secret: %s\r\n",
+    "POST", url, parsed_url.host, #body, conf.api_key, conf.secret)
+  if conf.mock_domain then
+    headers = headers..string_format("x-mock-domain: %s\r\n",conf.mock_domain)
+  end
+  
   return string_format("%s\r\n%s", headers, body)
 end
 
@@ -98,7 +101,7 @@ local function log(premature, conf, body)
     end
   end
 
-  ok, err = sock:send(generate_post_payload(parsed_url, body))
+  ok, err = sock:send(generate_post_payload(parsed_url, body, conf))
   if not ok then
     ngx.log(ngx.ERR, name .. "failed to send data to " .. host .. ":" .. tostring(port) .. ": ", err)
   end
