@@ -12,10 +12,10 @@ return {
     timeout = { default = 10000, type = "number" },
     keepalive = { default = 60000, type = "number" },
     log_bodies = { type = "boolean", default = true },
-    api_key = { type = "string", default = "" },
-    mock_domain = { type = "string", default = "" },
-    enable_on_header = { type = "string", default = "" },
-    disable_on_header = { type="string", default = "" },
-    secret = { type = "string", default = ""}
+    api_key = { type = "string" },
+    secret = { type = "string" },
+    mock_domain = { type = "string" },
+    enable_on_header = { type = "string" },
+    disable_on_header = { type = "string" }
   }
 }
