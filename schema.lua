@@ -14,6 +14,8 @@ return {
     log_bodies = { type = "boolean", default = true },
     api_key = { type = "string", default = "" },
     mock_domain = { type = "string", default = "" },
+    enable_on_header = { type = "string", default = "" },
+    disable_on_header = { type="string", default = "" },
     secret = { type = "string", default = ""}
   }
 }

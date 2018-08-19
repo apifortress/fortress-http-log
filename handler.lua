@@ -145,10 +145,26 @@ function FHttpLogHandler:body_filter(conf)
   end
 end
 
+local function hasValue(string)
+  return string ~= nil and string ~= ''
+end
+
+local function isEnabled(conf)
+  local enabled = false
+  if hasValue(conf.enable_on_header) then
+    enabled =  ngx.req.get_headers()[conf.enable_on_header] ~= nil
+  else
+    enabled = true
+  end
+  if hasValue(conf.disable_on_header) then
+    enabled = ngx.req.get_headers()[conf.disable_on_header] == nil and enabled
+  end
+  return enabled
+end
+
 function FHttpLogHandler:log(conf)
   FHttpLogHandler.super.log(self)
-  local mock = ngx.req.get_headers()["x-mock"]
-  if not mock or mock~="true" then
+  if isEnabled(conf) then
     local message = cjson_encode(serializer.serialize(ngx))
     local ok, err = ngx_timer(0, log, conf, message)
     if not ok then
