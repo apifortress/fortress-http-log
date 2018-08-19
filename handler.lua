@@ -12,10 +12,10 @@ local string_format = string.format
 local cjson_encode = cjson.encode
 local HTTP = "http"
 local HTTPS = "https"
-local NAME = "[ fhttp-log ] "
+local NAME = "[ fortress-http-log ] "
 
 local system_constants = require "lua_system_constants"
-local serializer = require "kong.plugins.fhttp-log.serializer"
+local serializer = require "kong.plugins.fortress-http-log.serializer"
 local BasePlugin = require "kong.plugins.base_plugin"
 local req_read_body = ngx.req.read_body
 local req_get_body_data = ngx.req.get_body_data
@@ -118,7 +118,7 @@ local FHttpLogHandler = BasePlugin:extend()
 FHttpLogHandler.PRIORITY = 1
 
 function FHttpLogHandler:new()
-  FHttpLogHandler.super.new(self, "fhttp-log")
+  FHttpLogHandler.super.new(self, "fortress-http-log")
 end
 
 function FHttpLogHandler:access(conf)
@@ -168,7 +168,7 @@ function FHttpLogHandler:log(conf)
     local message = cjson_encode(serializer.serialize(ngx))
     local ok, err = ngx_timer(0, log, conf, message)
     if not ok then
-      ngx.log(ngx.ERR, "[fhttp-log] failed to create timer: ", err)
+      ngx.log(ngx.ERR, "[fortress-http-log] failed to create timer: ", err)
     end
   end
 

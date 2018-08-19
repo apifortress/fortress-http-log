@@ -1,4 +1,4 @@
-# FHTTP-Log
+# Fortress-HTTP-Log
 ## A request / response logger for the Kong API Gateway
 The objective of this plugin is to privide a way to capture complete HTTP requests and responses (including the **request
   and response bodies** is required) as they transit in the Kong API Gateway.
