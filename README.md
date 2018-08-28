@@ -14,6 +14,9 @@ Once the data is captured, the plugin will send it to a specified endpoint via H
 * `secret` (**string, API Fortress specific**): turns into the x-secret header;
 * `mock_domain` (**url, API Fortress specific**): turns into the x-mock-domain header. Set this value if you're using the plugin
 to create mock responses in API Fortress;
+* `mock_log_all` (**boolean, API Fortress specific**): turns into the x-log-all header. Set this value if you're using the plugin
+to create mock responses in API Fortress. If set API Fortress will log each call separately and avoid overwrites;
+* `mock_criterion_headers` (**array, API Fortress specific**): turns into the x-mock-criterion-headers. Set this value if you're using the plugin to create mock responses in API Fortress. If set, API Fortress will use this list of headers to create expression filters
 * `enable_on_header` (**string**): if set with a header name as value, the plugin will operate only if that header is present
 in the request;
 * `disable_on_header` (**string**): if set with a header name as value, the plugin will disable itself if that header is present

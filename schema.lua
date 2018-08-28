@@ -16,6 +16,8 @@ return {
     secret = { type = "string" },
     mock_domain = { type = "string" },
     enable_on_header = { type = "string" },
-    disable_on_header = { type = "string" }
+    disable_on_header = { type = "string" },
+    mock_log_all = { type = "boolean", default = false },
+    mock_criterion_headers = { type= "array" }
   }
 }

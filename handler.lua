@@ -46,12 +46,23 @@ local function generate_post_payload(parsed_url, body, conf)
     url = parsed_url.path
   end
   local headers = string_format(
-    "%s %s HTTP/1.1\r\nHost: %s\r\nConnection: Keep-Alive\r\nContent-Type: application/json\r\nContent-Length: %s\r\nx-api-key: %s\r\nx-secret: %s\r\n",
-    "POST", url, parsed_url.host, #body, conf.api_key, conf.secret)
+    "%s %s HTTP/1.1\r\nHost: %s\r\nConnection: Keep-Alive\r\nContent-Type: application/json\r\nContent-Length: %s\r\n",
+    "POST", url, parsed_url.host, #body)
   if conf.mock_domain then
     headers = headers..string_format("x-mock-domain: %s\r\n",conf.mock_domain)
   end
-
+  if conf.api_key then
+    headers = headers..string_format("x-api-key: %s\r\n",conf.api_key)
+  end
+  if conf.secret then
+    headers = headers..string_format("x-secret: %s\r\n",conf.secret)
+  end
+  if conf.log_all then
+    headers = headers.."x-mock-log-all: true\r\n"
+  end
+  if conf.mock_criterion_headers ~= nil then
+    headers = headers..string_format("x-mock-criterion-headers: %s\r\n",cjson_encode(conf.mock_criterion_headers))
+  end
   return string_format("%s\r\n%s", headers, body)
 end
 
